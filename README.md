@@ -1,5 +1,37 @@
 # The actual most basic OpenRelic worker yet.
 
+This worker will take what file input it can read as UTF-8 and run a prompt on it.
+
+You prompt can reference the file contents explicitly by mentioning `$file`.
+
+The worker expects two environment variables `LLM_PROVIDER` and `LLM_MODEL`.
+
+You can also specify the optional `LLM_MAX_INPUT_TOKENS` to cap the prompt.
+
+You can tack this container onto your docker-compose.yml with something like
+```
+  openrelik-worker-llm:
+    container_name: openrelik-worker-llm
+    build:
+      context: ./openrelik-worker-llm
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - OPENRELIK_PYDEBUG=1
+      - OPENRELIK_PYDEBUG_PORT=5678
+      - REDIS_URL=redis://openrelik-redis:6379
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=llama3
+      - LLM_MAX_INPUT_TOKENS=1000000
+      - OLLAMA_SERVER_URL=http://openrelik-ollama:11434
+      - OLLAMA_DEFAULT_MODEL=llama3
+    ports:
+      - 5678:5678
+    volumes:
+      - ./data:/usr/share/openrelik/data
+    command: "celery --app=src.app worker --task-events --concurrency=4 --loglevel=INFO -Q openrelik-worker-llm"
+```
+
 You need an Ollama container that this worker can connect to on TCP/11434 ie.
 ```
   openrelik-ollama:
