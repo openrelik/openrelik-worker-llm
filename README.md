@@ -1,4 +1,4 @@
-# The actual most basic OpenRelic worker yet.
+# The actual most basic OpenRelik worker yet.
 
 This worker will take what file input it can read as UTF-8 and run a prompt on it.
 
