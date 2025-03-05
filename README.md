@@ -1,14 +1,16 @@
-# The actual most basic OpenRelik worker yet.
+# OpenRelik worker for analysing files using an LLM provider
 
-This worker will take what file input it can read as UTF-8 and run a prompt on it.
+This worker supports the LLM providers defined in openrelik-ai-common.
+
+This worker will take any files it can read as UTF-8 and run a prompt on it.
 
 You prompt can reference the file contents explicitly by mentioning `$file`.
 
 The worker expects two environment variables `LLM_PROVIDER` and `LLM_MODEL`.
 
-You can also specify the optional `LLM_MAX_INPUT_TOKENS` to cap the prompt.
+You can also specify the optional `LLM_MAX_INPUT_TOKENS` to truncate the prompt.
 
-You can tack this container onto your docker-compose.yml with something like
+You can tack this worker onto your docker-compose.yml with something like
 ```
   openrelik-worker-llm:
     container_name: openrelik-worker-llm
@@ -32,7 +34,7 @@ You can tack this container onto your docker-compose.yml with something like
     command: "celery --app=src.app worker --task-events --concurrency=4 --loglevel=INFO -Q openrelik-worker-llm"
 ```
 
-You need an Ollama container that this worker can connect to on TCP/11434 ie.
+If you're using Ollama then you can tack on a container exposing TCP/11434 ie.
 ```
   openrelik-ollama:
     container_name: ollama
@@ -41,7 +43,7 @@ You need an Ollama container that this worker can connect to on TCP/11434 ie.
       - 11434:11434
 ```
 
-You will also need to load the llama3 model in the Ollama instance ie.
+You will also need to load the llama3 model in the Ollama server instance ie.
 ```
 docker compose exec openrelik-ollama /bin/bash
 root@04456c12e6e8:/# ollama run llama3
