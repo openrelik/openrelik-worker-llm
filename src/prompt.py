@@ -35,7 +35,7 @@ TASK_METADATA = {
         {
             "name": "prompt",
             "label": "Enter prompt used to process artifacts",
-            "description": "This prompt will be used by the LLM to process the artifacts and produce some text output. But it's probably not going to work.",
+            "description": "This prompt will be used by the LLM to process the artifacts and produce some text output.",
             "type": "textarea",
             "required": True,
         },
@@ -79,12 +79,15 @@ def prompt(
         max_input_tokens=None,
     )
     for input_file in input_files:
-        with open(input_file.get("path"), "r", encoding="utf-8") as fh:
-            file_content = fh.read()
-        response = llm.generate_file_analysis(
-            prompt=prompt + '\n>>>>>\n',
-            file_content=file_content,
-        )
+        try:
+            with open(input_file.get("path"), "r", encoding="utf-8") as fh:
+                file_content = fh.read()
+            response = llm.generate_file_analysis(
+                prompt=prompt + '\n>>>>>\n',
+                file_content=file_content,
+            )
+        except:
+            response = "Error: Could not parse input file."
         output_file = create_output_file(
             output_path,
             extension="text",
