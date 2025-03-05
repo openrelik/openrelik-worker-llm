@@ -1,4 +1,4 @@
-# OpenRelik worker for analysing files using an LLM provider
+# OpenRelik worker for analysing files with an LLM
 
 This worker supports the LLM providers defined in openrelik-ai-common.
 
