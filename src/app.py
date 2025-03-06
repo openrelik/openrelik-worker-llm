@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,5 +25,5 @@ REDIS_URL = os.getenv("REDIS_URL")
 celery = Celery(
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["src.prompt"],
+    include=["src.tasks"],
 )
