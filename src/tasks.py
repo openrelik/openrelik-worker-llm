@@ -13,14 +13,15 @@
 # limitations under the License.
 import logging
 import os
+
+from openrelik_ai_common.providers import manager
 from openrelik_worker_common.file_utils import create_output_file
 from openrelik_worker_common.task_utils import (
     create_task_result,
     get_input_files,
 )
-from openrelik_ai_common.providers import manager
-from .app import celery
 
+from .app import celery
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -91,6 +92,10 @@ def prompt(
         max_input_tokens=int(llm_max_input_tokens) if llm_max_input_tokens else None,
     )
 
+    self.send_event(
+        "task-progress",
+        data={"processed_files": 0, "total_files": len(input_files)},
+    )
     for input_file in input_files:
         try:
             with open(input_file.get("path"), "r", encoding="utf-8") as fh:
@@ -105,13 +110,21 @@ def prompt(
 
         output_file = create_output_file(
             output_path,
-            extension="txt",
-            data_type="llm:prompt:text",
+            display_name=f"{input_file.get('display_name')}-LLM.txt",
+            data_type="llm:response:text",
         )
 
-        with open(output_file.path, "w") as f:
-            f.write(response)
+        with open(output_file.path, "w") as fh:
+            fh.write(response)
         output_files.append(output_file.to_dict())
+
+        self.send_event(
+            "task-progress",
+            data={
+                "processed_files": len(output_files),
+                "total_files": len(input_files),
+            },
+        )
 
     return create_task_result(
         output_files=output_files,
