@@ -1,3 +1,7 @@
+> [!CAUTION]  
+> # NOTICE - DO NOT USE
+> This repository has been archived and moved to https://github.com/openrelik/openrelik-workers/
+
 # OpenRelik worker for analysing files with an LLM
 
 This worker supports the LLM providers defined in openrelik-ai-common. This worker will take any files it can read as UTF-8 and run a prompt on it. You prompt can reference the file contents explicitly by mentioning `$file`.
